@@ -38,6 +38,8 @@ func (l *Lexer) readChar() {
 
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
+
+	l.skipWhitespace()
 	switch l.ch {
 	case '=':
 		tok = newToken(token.ASSIGN, l.ch)
@@ -61,14 +63,21 @@ func (l *Lexer) NextToken() token.Token {
 	default:
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()
+			tok.Type = token.LookupIdent(tok.Literal)
+			return tok
+		} else if isDigit(l.ch) {
+			tok.Type = token.INT
+			tok.Literal = l.readNumber()
 			return tok
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
 		}
+
 	}
 	l.readChar()
 	return tok
 }
+
 func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
 }
@@ -84,21 +93,29 @@ func isLetter(ch byte) bool {
 	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
 }
 
-// We added a default branch to our switch statement, so we can check for identifiers whenever
-// the l.ch is not one of the recognized characters. We also added the generation of token.ILLEGAL
-// tokens. If we end up there, we truly don’t know how to handle the current character and declare
-// it as token.ILLEGAL.
-// The isLetter helper function just checks whether the given argument is a letter. That sounds
-// easy enough, but what’s noteworthy about isLetter is that changing this function has a larger
-// impact on the language our interpreter will be able to parse than one would expect from such
-// a small function. As you can see, in our case it contains the check ch == '_', which means that
-// we’ll treat _ as a letter and allow it in identifiers and keywords. That means we can use variable
-// names like foo_bar. Other programming languages even allow ! and ? in identifiers. If you
-// want to allow that too, this is the place to sneak it in.
-// readIdentifier() does exactly what its name suggests: it reads in an identifier and advances
-// our lexer’s positions until it encounters a non-letter-character.
-// In the default: branch of the switch statement we use readIdentifier() to set the Literal field
-// of our current token. But what about its Type? Now that we have read identifiers like let, fn
-// or foobar, we need to be able to tell user-defined identifiers apart from language keywords. We
-// need a function that returns the correct TokenType for the token literal we have. What better
-// place than the token package to add such a function?
+func (l *Lexer) skipWhitespace() {
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+		l.readChar()
+	}
+}
+
+// Some language implementations do create tokens for newline characters for example and throw parsing errors if they are
+// not at the correct place in the stream of tokens. We skip over newline characters to make the
+// parsing step later on a little easier.
+
+func (l *Lexer) readNumber() string {
+	position := l.position
+	for isDigit(l.ch) {
+		l.readChar()
+	}
+	return l.input[position:l.position]
+}
+
+// I don’t know if you noticed, but we simplified things a lot in readNumber. We only read in
+// integers. What about floats? Or numbers in hex notation? Octal notation? We ignore them
+// and just say that Monkey doesn’t support this. Of course, the reason for this is again the
+// educational aim and limited scope of this book.
+
+func isDigit(ch byte) bool {
+	return '0' <= ch && ch <= '9'
+}
