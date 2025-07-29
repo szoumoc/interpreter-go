@@ -1,16 +1,15 @@
-<<<<<<< HEAD
-This project is based on the book Writing An Interpreter In Go by Thorsten Ball. It follows the development of a simple interpreter for a programming language, built from scratch using Go.
+This project is based on the book Writing **An Interpreter In Go by Thorsten Ball**. It follows the development of a simple interpreter for a programming language, built from scratch using Go.
 
-Goal
+**Goal**
 The aim is to implement a fully working interpreter that includes:
 
-A lexer (tokenizer)
+**A lexer** (tokenizer)
 
-A parser
+**A parser**
 
-An AST (Abstract Syntax Tree)
+**An AST (Abstract Syntax Tree)**
 
-An evaluator
+**An evaluator**
 
 Each component is built incrementally and explained thoroughly, making it an ideal resource for learning how interpreters work under the hood.
 
@@ -25,14 +24,21 @@ However, for the purposes of this learning-focused implementation, we've opted f
 This tradeoff allows us to move forward quickly and build a working interpreter, while leaving room for future improvements.
 
 =======
-Writing An Interpreter In Go
+**Writing An Interpreter In Go**
 
 
-for lexer(It will take source code as input and output the tokens that represent the source
-code.),
+for **lexer(It will take source code as input and output the tokens that represent the source
+code.**),
     "in a production
     environment it makes sense to attach filenames and line numbers to tokens, to better track
     down lexing and parsing errors. So it would be better to initialize the lexer with an io.Reader
     and the filename. But since that would add more complexity we’re not here to handle, we’ll
     start small and just use a string and ignore filenames and line numbers."
->>>>>>> 86609016538b09864f7229ece189df5cbe1bf2ac
+
+**Start of a REPL**
+
+The Monkey language needs a REPL. REPL stands for **“Read Eval Print Loop”** and you probably know what it is from other interpreted languages: Python has a REPL, Ruby has one, every
+JavaScript runtime has one, most Lisps have one and a lot of other languages too. Sometimes
+the REPL is called “console”, sometimes “interactive mode”. The concept is the same: the
+REPL reads input, sends it to the interpreter for evaluation, prints the result/output of the
+interpreter and starts again. Read, Eval, Print, Loop.
