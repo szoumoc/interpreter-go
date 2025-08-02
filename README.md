@@ -42,3 +42,53 @@ JavaScript runtime has one, most Lisps have one and a lot of other languages too
 the REPL is called “console”, sometimes “interactive mode”. The concept is the same: the
 REPL reads input, sends it to the interpreter for evaluation, prints the result/output of the
 interpreter and starts again. Read, Eval, Print, Loop.
+
+
+**PARSERS**
+
+A parser is a software component that takes input data (frequently text) and builds
+a data structure – often some kind of parse tree, abstract syntax tree or other
+hierarchical structure – giving a structural representation of the input, checking for
+correct syntax in the process. […] The parser is often preceded by a separate lexical
+analyser, which creates tokens from the sequence of input characters;
+They take source code as input (either as text or tokens) and produce
+a data structure which represents this source code. While building up the data structure, they
+unavoidably analyse the input, checking that it conforms to the expected structure. Thus the
+process of parsing is also called syntactic analysis.
+A small example should make things clearer. Let’s say that we have the following source code:
+`if (3 * 5 > 10) {
+return "hello";
+} else {
+return "goodbye";
+}`
+And let’s say we are using JavaScript, have a MagicLexer, a MagicParser and the AST is built
+out of JavaScript objects, then the parsing step might produce something like this:
+`> var input = 'if (3 * 5 > 10) { return "hello"; } else { return "goodbye"; }';
+> var tokens = MagicLexer.parse(input);
+> MagicParser.parse(tokens);
+{
+type: "if-statement",
+    condition: {
+    type: "operator-expression",
+    operator: ">",
+    left: {
+    type: "operator-expression",
+    operator: "*",
+    left: { type: "integer-literal", value: 3 },
+    right: { type: "integer-literal", value: 5 }
+    29
+    },
+    right: { type: "integer-literal", value: 10 }
+    },
+    consequence: {
+    type: "return-statement",
+    returnValue: { type: "string-literal", value: "hello" }
+    },
+    alternative: {
+    type: "return-statement",
+    returnValue: { type: "string-literal", value: "goodbye" }
+    }
+}`
+The parser we are going to write is a recursive descent parser. And in particular, it’s a “top
+down operator precedence” parser, sometimes called “Pratt parser”, after its inventor Vaughan
+Pratt.
